@@ -8,7 +8,9 @@ namespace Manager.Domain.Entities
         public string Password { get; private set; }
 
         //EF Constructor
+        #pragma warning disable CS8618 
         protected User() { }
+        #pragma warning restore CS8618 
 
         public User(string name, string email, string password)
         {
