@@ -35,9 +35,9 @@ namespace Manager.Infra.Repositories
 
         public virtual async Task<T> GetByIdAsync(Guid id)
         {
-            var obj = await _context.Set<T>().AsNoTracking().Where(x => x.id == id).ToListAsync();
+            var obj = await _context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
 
-            return obj.FirstOrDefault();
+            return obj;
         }
 
         public virtual async Task<T> UpdateAsync(T entity)

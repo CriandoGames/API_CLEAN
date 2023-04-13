@@ -1,4 +1,5 @@
-﻿using Manager.Domain.Validators;
+﻿using Manager.Core;
+using Manager.Domain.Validators;
 namespace Manager.Domain.Entities
 {
     public class User : Base
@@ -17,6 +18,7 @@ namespace Manager.Domain.Entities
             Name = name;
             Email = email;
             Password = password;
+            Validate();
         }
 
 
@@ -51,7 +53,7 @@ namespace Manager.Domain.Entities
                 {
                     _errors.Add(error.ErrorMessage);
                 }
-                throw new Exception($"Alguns campos estão invalidos {_errors[0]}");
+                throw new DomainException("Alguns campos estão invalidos"!, _errors);
 
 
             }
