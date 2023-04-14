@@ -5,6 +5,7 @@ using Manager.Core;
 using Manager.Domain.Entities;
 using Manager.Services.DTO;
 using Manager.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Manager.API.Controllers
@@ -171,6 +172,7 @@ namespace Manager.API.Controllers
 
 
         [HttpGet]
+        [Authorize]
         [Route("/api/v1/users/all")]
         public async Task<ActionResult> GetAll()
         {
