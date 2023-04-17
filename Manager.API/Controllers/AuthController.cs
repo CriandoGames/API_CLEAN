@@ -1,7 +1,11 @@
-﻿using Manager.API.Util;
+﻿using AutoMapper;
+using Manager.API.Util;
 using Manager.API.Util.Token;
 using Manager.API.ViewModels;
+using Manager.Domain.Entities;
+using Manager.Infra.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using SecureIdentity.Password;
 
 namespace Manager.API.Controllers
 {
@@ -9,43 +13,49 @@ namespace Manager.API.Controllers
     public class AuthController : ControllerBase
     {
 
-        private readonly IConfiguration _configuration;
+        private readonly IUserRepository _repository;
         private readonly ITokenGenerator _tokenGenerator;
+  
 
-        public AuthController(IConfiguration configuration, ITokenGenerator tokenGenerator)
+        public AuthController(IUserRepository repository, ITokenGenerator tokenGenerator)
         {
-            _configuration = configuration;
+            _repository = repository;
             _tokenGenerator = tokenGenerator;
+    
         }
 
         [HttpPost]
         [Route("v1/auth")]
-        public IActionResult Authenticate([FromBody] AuthViewModel input)
+        public async Task<IActionResult> Authenticate([FromBody] AuthViewModel input)
         {
 
 
             try
             {
-                var user = _configuration["Jwt:Login"];
-                var password = _configuration["Jwt:Password"];
-                if (user == input.Login || password == input.Password)
-                {
+                var foundUser = await _repository.GetByEmailAsync(input.Login);
 
-                    var token = _tokenGenerator.GenerateToken();
-                    return Ok(new ResultViewModel
-                    {
-                        Data = token,
-                        Message = "Usuário criado com sucesso",
-                        Success = true
-                    });
-
-                }
-                else
+                if( foundUser == null)
                 {
                     return Unauthorized(ErrorsResponse.UnathorizedErrorMessage());
                 }
 
 
+                if(!PasswordHasher.Verify(foundUser.Password,input.Password))
+                    return Unauthorized(ErrorsResponse.UnathorizedErrorMessage());
+
+
+              
+                _tokenGenerator.SetUser(foundUser);
+                var token = _tokenGenerator.GenerateToken();
+                    return Ok(new ResultViewModel
+                    {
+                        Data = 
+                        token,
+                        Message = "Usuário criado com sucesso",
+                        Success = true
+                    });
+
+                
             }
             catch (Exception)
             {

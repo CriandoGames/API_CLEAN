@@ -12,7 +12,7 @@ namespace Manager.Infra.Context
     public class ManagerContext : DbContext
     {
         //EF 
-       //public ManagerContext() { }
+       public ManagerContext() { }
 
         public ManagerContext(DbContextOptions<ManagerContext> options) : base(options) { }
             

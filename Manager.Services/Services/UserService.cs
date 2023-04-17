@@ -4,6 +4,7 @@ using Manager.Domain.Entities;
 using Manager.Infra.Interfaces;
 using Manager.Services.DTO;
 using Manager.Services.Interfaces;
+using SecureIdentity.Password;
 
 namespace Manager.Services.Services
 {
@@ -30,6 +31,10 @@ namespace Manager.Services.Services
             }
 
             var user = _mapper.Map<User>(entity);
+            
+            var password =  PasswordHasher.Hash(user.Password);
+
+            user.changePassword(password);
             user.Validate();
 
             var userCreate = await _repository.CreateAsync(user);
@@ -107,6 +112,10 @@ namespace Manager.Services.Services
 
             var user = _mapper.Map<User>(entity);
             user.Validate();
+
+            var password = PasswordHasher.Hash(user.Password);
+
+            user.changePassword(password);
 
             var userUpdate = await _repository.UpdateAsync(user);
 
